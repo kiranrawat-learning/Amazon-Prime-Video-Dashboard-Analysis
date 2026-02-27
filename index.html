@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazon Prime Video — Content Analysis | Kiran Rawat</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --prime-blue: #00A8E1;
+    --prime-dark: #0F1923;
+    --prime-mid: #162230;
+    --prime-card: #1C2D3D;
+    --prime-border: #1E3A50;
+    --accent: #00D4FF;
+    --accent2: #FF6B35;
+    --text-primary: #F0F4F8;
+    --text-secondary: #8BA3B5;
+    --gold: #FFD166;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--prime-dark);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(0,168,225,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(255,107,53,0.08) 0%, transparent 50%);
+    pointer-events: none;
+  }
+
+  .hero-grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,168,225,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,168,225,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 60px 80px 80px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,168,225,0.1);
+    border: 1px solid rgba(0,168,225,0.3);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+    width: fit-content;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 6vw, 88px);
+    line-height: 0.92;
+    letter-spacing: 1px;
+    margin-bottom: 24px;
+  }
+
+  .hero-title span {
+    display: block;
+    color: var(--prime-blue);
+    -webkit-text-stroke: 1px var(--prime-blue);
+  }
+
+  .hero-title .outline {
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(240,244,248,0.3);
+  }
+
+  .hero-desc {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    max-width: 440px;
+    margin-bottom: 48px;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--prime-blue);
+    color: white;
+    text-decoration: none;
+    padding: 14px 28px;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover { background: var(--accent); transform: translateY(-2px); }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--prime-border);
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 14px 28px;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--prime-blue);
+    color: var(--text-primary);
+  }
+
+  .hero-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 80px 80px 40px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .stat-card {
+    background: var(--prime-card);
+    border: 1px solid var(--prime-border);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.6s both;
+  }
+
+  .stat-card:nth-child(1) { animation-delay: 0.1s; }
+  .stat-card:nth-child(2) { animation-delay: 0.2s; }
+  .stat-card:nth-child(3) { animation-delay: 0.3s; }
+  .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--prime-blue);
+  }
+
+  .stat-card:nth-child(2)::before { background: var(--accent2); }
+  .stat-card:nth-child(3)::before { background: var(--gold); }
+  .stat-card:nth-child(4)::before { background: #7C3AED; }
+
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION BASE ── */
+  section {
+    padding: 100px 80px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--prime-blue);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    line-height: 1;
+    margin-bottom: 48px;
+  }
+
+  /* ── INSIGHTS ── */
+  .insights-section {
+    background: var(--prime-mid);
+    max-width: 100%;
+    padding: 100px 0;
+  }
+
+  .insights-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 80px;
+  }
+
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--prime-border);
+  }
+
+  .insight-card {
+    background: var(--prime-mid);
+    padding: 48px 40px;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .insight-card:hover { background: var(--prime-card); }
+
+  .insight-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    color: rgba(0,168,225,0.12);
+    line-height: 1;
+    position: absolute;
+    top: 24px;
+    right: 32px;
+  }
+
+  .insight-icon {
+    font-size: 32px;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .insight-title {
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  .insight-text {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+  }
+
+  .insight-tag {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 4px 12px;
+    background: rgba(0,168,225,0.1);
+    border: 1px solid rgba(0,168,225,0.2);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--prime-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ── GENRE BAR CHART ── */
+  .chart-section { }
+
+  .genre-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 8px;
+  }
+
+  .genre-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 80px;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .genre-name {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .genre-bar-track {
+    height: 32px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--prime-border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .genre-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--prime-blue), var(--accent));
+    position: relative;
+    transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: barGrow 1.2s both;
+  }
+
+  .genre-bar-fill.orange { background: linear-gradient(90deg, var(--accent2), #FFB347); }
+  .genre-bar-fill.gold   { background: linear-gradient(90deg, var(--gold), #FFF0A0); }
+  .genre-bar-fill.purple { background: linear-gradient(90deg, #7C3AED, #A78BFA); }
+  .genre-bar-fill.green  { background: linear-gradient(90deg, #059669, #34D399); }
+
+  @keyframes barGrow {
+    from { width: 0 !important; }
+  }
+
+  .genre-row:nth-child(1) .genre-bar-fill { animation-delay: 0.1s; }
+  .genre-row:nth-child(2) .genre-bar-fill { animation-delay: 0.2s; }
+  .genre-row:nth-child(3) .genre-bar-fill { animation-delay: 0.3s; }
+  .genre-row:nth-child(4) .genre-bar-fill { animation-delay: 0.4s; }
+  .genre-row:nth-child(5) .genre-bar-fill { animation-delay: 0.5s; }
+
+  .genre-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  /* ── RECOMMENDATIONS ── */
+  .rec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  .rec-card {
+    border: 1px solid var(--prime-border);
+    padding: 36px 32px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .rec-card:hover {
+    border-color: var(--prime-blue);
+    transform: translateY(-4px);
+  }
+
+  .rec-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--prime-blue), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .rec-card:hover::after { opacity: 1; }
+
+  .rec-icon { font-size: 28px; margin-bottom: 16px; display: block; }
+  .rec-title { font-weight: 600; font-size: 17px; margin-bottom: 12px; }
+
+  .rec-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rec-list li {
+    font-size: 14px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.5;
+  }
+
+  .rec-list li::before {
+    content: '→';
+    color: var(--prime-blue);
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── TECH STACK ── */
+  .tech-section {
+    background: var(--prime-mid);
+    max-width: 100%;
+    padding: 80px 0;
+  }
+
+  .tech-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .tech-label { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; }
+
+  .tech-pills {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .tech-pill {
+    background: var(--prime-card);
+    border: 1px solid var(--prime-border);
+    padding: 10px 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .tech-pill:hover { border-color: var(--prime-blue); color: var(--prime-blue); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--prime-dark);
+    border-top: 1px solid var(--prime-border);
+    padding: 60px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 24px;
+  }
+
+  .footer-left .name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--text-primary);
+  }
+
+  .footer-left .title {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    border: 1px solid var(--prime-border);
+    padding: 10px 18px;
+    transition: all 0.2s;
+  }
+
+  .footer-link:hover {
+    color: var(--prime-blue);
+    border-color: var(--prime-blue);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--prime-border) 20%, var(--prime-border) 80%, transparent);
+    margin: 0 80px;
+    width: calc(100% - 160px);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-right { padding: 40px 80px 80px; }
+    .insights-grid { grid-template-columns: repeat(2, 1fr); }
+    .rec-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .hero-left { padding: 60px 24px; }
+    section { padding: 60px 24px; }
+    .insights-inner, .tech-inner { padding: 0 24px; }
+    footer { padding: 40px 24px; flex-direction: column; align-items: flex-start; }
+    .insights-grid { grid-template-columns: 1fr; }
+    .genre-row { grid-template-columns: 100px 1fr 60px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .hero-right { padding: 0 24px 60px; }
+    .divider { margin: 0 24px; width: calc(100% - 48px); }
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--prime-dark); }
+  ::-webkit-scrollbar-thumb { background: var(--prime-border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--prime-blue); }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 80px;
+    background: rgba(15,25,35,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(30,58,80,0.6);
+  }
+
+  .nav-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--text-primary);
+    letter-spacing: 1px;
+  }
+
+  .nav-brand span { color: var(--prime-blue); }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text-primary); }
+
+  @media (max-width: 640px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">Kiran<span>.</span>Rawat</div>
+  <ul class="nav-links">
+    <li><a href="#insights">Insights</a></li>
+    <li><a href="#genres">Genres</a></li>
+    <li><a href="#recommendations">Recommendations</a></li>
+    <li><a href="https://public.tableau.com/app/profile/kiran.rawat3887/viz/AmazonPrimeContentPerformanceDashboard/Dashboard1" target="_blank">Dashboard ↗</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero" style="padding-top: 80px;">
+  <div class="hero-grid-overlay"></div>
+
+  <div class="hero-left">
+    <div class="badge">Data Analytics · Capstone Project</div>
+
+    <h1 class="hero-title">
+      <span class="outline">Amazon</span>
+      <span>Prime</span>
+      VIDEO
+      <span class="outline">ANALYSIS</span>
+    </h1>
+
+    <p class="hero-desc">
+      An end-to-end exploration of 8,861 titles across movies and TV shows —
+      uncovering genre trends, regional patterns, and what makes content truly resonate with audiences.
+    </p>
+
+    <div class="hero-actions">
+      <a href="https://public.tableau.com/app/profile/kiran.rawat3887/viz/AmazonPrimeContentPerformanceDashboard/Dashboard1" target="_blank" class="btn-primary">
+        📊 View Live Dashboard
+      </a>
+      <a href="https://github.com/kiranrawat-learning/Amazon-Prime-Video-DatasetEDA" target="_blank" class="btn-secondary">
+        ⌥ GitHub Repo
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num">8,861</div>
+        <div class="stat-label">Total Titles</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">7,852</div>
+        <div class="stat-label">Movies</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">1,009</div>
+        <div class="stat-label">TV Shows</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Top Regions</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- INSIGHTS -->
+<div class="insights-section" id="insights">
+  <div class="insights-inner">
+    <div class="section-label">Key Findings</div>
+    <h2 class="section-title">Strategic Insights</h2>
+
+    <div class="insights-grid">
+      <div class="insight-card">
+        <div class="insight-num">01</div>
+        <span class="insight-icon">🎭</span>
+        <div class="insight-title">Genre Volume vs. Quality Gap</div>
+        <div class="insight-text">Drama, Comedy and Thriller dominate by volume — but Documentaries, Reality Shows, and History content earn significantly higher audience ratings. A clear underinvestment opportunity exists.</div>
+        <span class="insight-tag">Content Strategy</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">02</div>
+        <span class="insight-icon">📺</span>
+        <div class="insight-title">TV Show Deficit</div>
+        <div class="insight-text">TV shows make up only ~11% of the content library despite driving stronger long-term engagement. Multi-season series build habitual viewing and increase subscription retention.</div>
+        <span class="insight-tag">Production</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">03</div>
+        <span class="insight-icon">🌍</span>
+        <div class="insight-title">Regional Concentration</div>
+        <div class="insight-text">US, Canada, and India are the most active content-producing countries. Significant whitespace exists in other high-population markets — an untapped growth lever for localization.</div>
+        <span class="insight-tag">Regional</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">04</div>
+        <span class="insight-icon">📅</span>
+        <div class="insight-title">Content Release Gaps</div>
+        <div class="insight-text">The content release timeline shows bursty additions with noticeable gaps between high-activity periods — leading to viewer drop-off. Consistent pacing with short-form content can fill these gaps.</div>
+        <span class="insight-tag">Lifecycle</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">05</div>
+        <span class="insight-icon">📈</span>
+        <div class="insight-title">Rising Niche Trends</div>
+        <div class="insight-text">Documentary, History, and Reality genres show strong upward rating trends over time, even with lower content volume — signaling a measurable shift in viewer preferences worth acting on early.</div>
+        <span class="insight-tag">Forecasting</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">06</div>
+        <span class="insight-icon">🎯</span>
+        <div class="insight-title">Hidden Gem Problem</div>
+        <div class="insight-text">Several titles — particularly niche movies — carry high ratings but very low vote counts. These are quality titles with limited reach, representing a targeted marketing opportunity for personalized campaigns.</div>
+        <span class="insight-tag">Marketing</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GENRE CHART -->
+<section id="genres">
+  <div class="section-label">Genre Distribution</div>
+  <h2 class="section-title">Content Volume by Genre</h2>
+
+  <div class="genre-chart">
+    <div class="genre-row">
+      <div class="genre-name">Drama</div>
+      <div class="genre-bar-track"><div class="genre-bar-fill" style="width: 92%"></div></div>
+      <div class="genre-count">~986</div>
+    </div>
+    <div class="genre-row">
+      <div class="genre-name">Comedy</div>
+      <div class="genre-bar-track"><div class="genre-bar-fill orange" style="width: 78%"></div></div>
+      <div class="genre-count">~834</div>
+    </div>
+    <div class="genre-row">
+      <div class="genre-name">Thriller</div>
+      <div class="genre-bar-track"><div class="genre-bar-fill gold" style="width: 63%"></div></div>
+      <div class="genre-count">~675</div>
+    </div>
+    <div class="genre-row">
+      <div class="genre-name">Documentary</div>
+      <div class="genre-bar-track"><div class="genre-bar-fill purple" style="width: 48%"></div></div>
+      <div class="genre-count">~512</div>
+    </div>
+    <div class="genre-row">
+      <div class="genre-name">Action</div>
+      <div class="genre-bar-track"><div class="genre-bar-fill green" style="width: 41%"></div></div>
+      <div class="genre-count">~438</div>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; font-size: 13px; color: var(--text-secondary); font-family: 'DM Mono', monospace; border-left: 3px solid var(--prime-blue); padding-left: 16px;">
+    ★ Note: Despite lower volume, Documentary genres show consistently higher audience ratings — the quality-quantity gap is a key strategic signal.
+  </p>
+</section>
+
+<div class="divider"></div>
+
+<!-- RECOMMENDATIONS -->
+<section id="recommendations">
+  <div class="section-label">Action Plan</div>
+  <h2 class="section-title">Recommendations</h2>
+
+  <div class="rec-grid">
+    <div class="rec-card">
+      <span class="rec-icon">❤️</span>
+      <div class="rec-title">Make More of What People Love</div>
+      <ul class="rec-list">
+        <li>Invest in Documentary, History, and Reality genres which earn higher ratings</li>
+        <li>These are underrepresented but deeply appreciated by audiences</li>
+        <li>Focus acquisition budgets on high-quality niche content, not just volume</li>
+      </ul>
+    </div>
+
+    <div class="rec-card">
+      <span class="rec-icon">🌏</span>
+      <div class="rec-title">Think Local, Act Global</div>
+      <ul class="rec-list">
+        <li>Prioritize partnerships with creators in India, US, and Canada</li>
+        <li>Invest in subtitle/dubbing capabilities for underserved regions</li>
+        <li>Commission culturally specific content to drive regional engagement</li>
+      </ul>
+    </div>
+
+    <div class="rec-card">
+      <span class="rec-icon">📡</span>
+      <div class="rec-title">Keep the Content Flowing</div>
+      <ul class="rec-list">
+        <li>Fill release gaps with short-form specials and seasonal content</li>
+        <li>Develop multi-season TV series to drive habitual, long-term viewing</li>
+        <li>Use watch pattern data to time content drops for maximum retention</li>
+      </ul>
+    </div>
+
+    <div class="rec-card">
+      <span class="rec-icon">💎</span>
+      <div class="rec-title">Surface Hidden Gems</div>
+      <ul class="rec-list">
+        <li>Identify high-rated titles with low vote counts and promote them actively</li>
+        <li>Build personalized recommendation campaigns by genre affinity</li>
+        <li>Run targeted in-app banners for niche content to the right demographics</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<div class="tech-section">
+  <div class="tech-inner">
+    <div class="tech-label">Built With</div>
+    <div class="tech-pills">
+      <div class="tech-pill">🐍 Python</div>
+      <div class="tech-pill">🐼 Pandas</div>
+      <div class="tech-pill">📊 Matplotlib</div>
+      <div class="tech-pill">🔢 NumPy</div>
+      <div class="tech-pill">📓 Jupyter</div>
+      <div class="tech-pill">📈 Tableau</div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <div class="name">Kiran Rawat</div>
+    <div class="title">Data Analyst · Capstone Project 2024</div>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/kiranrawat-learning/Amazon-Prime-Video-DatasetEDA" target="_blank" class="footer-link">
+      ⌥ GitHub
+    </a>
+    <a href="https://public.tableau.com/app/profile/kiran.rawat3887/viz/AmazonPrimeContentPerformanceDashboard/Dashboard1" target="_blank" class="footer-link">
+      📊 Tableau
+    </a>
+  </div>
+</footer>
+
+</body>
+</html>
