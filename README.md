@@ -99,7 +99,7 @@ pip install pandas numpy matplotlib seaborn jupyter
 ### Run the Notebook
 ```bash
 git clone https://github.com/kiranrawat-learning/Amazon-Prime-Video-Dataset-EDA.git
-cd Amazon-Prime-Video-DatasetEDA
+cd Amazon-Prime-Video-Dashboard-Analysis
 jupyter notebook Capstone_project_2_EDA.ipynb
 ```
 
